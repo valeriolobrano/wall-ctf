@@ -1,0 +1,50 @@
+[project]
+name = "wall-ctf"
+version = "1.0.0"
+description = "wall-ctf (CATI) - Conduction Transfer Function (CTF) coefficients for multilayer walls using the Mitalas-Stephenson / Z-transform method"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "CC-BY-NC-4.0"}
+authors = [
+    {name = "Valerio Lo Brano", email = "valerio.lobrano@unipa.it"},
+]
+keywords = [
+    "thermal", "wall", "transfer-function", "CTF", "TRNSYS",
+    "building-simulation", "Z-transform", "Mitalas", "ASHRAE",
+    "conduction", "multilayer", "heat-transfer",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Topic :: Scientific/Engineering :: Physics",
+    "License :: Other/Proprietary License",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.8"]
+
+[project.urls]
+Homepage = "https://github.com/valeriolobrano/wall-ctf"
+Documentation = "https://github.com/valeriolobrano/wall-ctf#readme"
+Issues = "https://github.com/valeriolobrano/wall-ctf/issues"
+
+[project.scripts]
+cati = "cati.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["cati"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]

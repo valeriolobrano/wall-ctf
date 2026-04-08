@@ -1,0 +1,49 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the following publications."
+title: "wall-ctf (CATI) - Conduction Transfer Function Coefficients"
+version: 1.0.0
+date-released: 2026-04-08
+authors:
+  - family-names: Lo Brano
+    given-names: Valerio
+    email: valerio.lobrano@unipa.it
+    affiliation: "Universita degli Studi di Palermo"
+    orcid: ""
+license: CC-BY-NC-4.0
+repository-code: "https://github.com/valeriolobrano/wall-ctf"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Beccali
+      given-names: Giorgio
+    - family-names: Cellura
+      given-names: Maurizio
+    - family-names: Lo Brano
+      given-names: Valerio
+    - family-names: Orioli
+      given-names: Aldo
+  title: "Single thermal zone balance solved by Transfer Function Method"
+  journal: "Energy and Buildings"
+  volume: 37
+  start: 1268
+  end: 1277
+  year: 2005
+  doi: "10.1016/j.enbuild.2005.02.010"
+references:
+  - type: article
+    authors:
+      - family-names: Beccali
+        given-names: Giorgio
+      - family-names: Cellura
+        given-names: Maurizio
+      - family-names: Lo Brano
+        given-names: Valerio
+      - family-names: Orioli
+        given-names: Aldo
+    title: "Is the transfer function method reliable in a European building context? A theoretical analysis and a case study in the south of Italy"
+    journal: "Applied Thermal Engineering"
+    volume: 25
+    start: 341
+    end: 357
+    year: 2005
+    doi: "10.1016/j.applthermaleng.2004.06.010"

@@ -1,0 +1,67 @@
+{
+    "name": "Insulated cavity wall",
+    "layers": [
+        {
+            "name": "External surface resistance",
+            "thickness": 0.0,
+            "density": 0.0,
+            "specific_heat": 0.0,
+            "conductivity": 0.0,
+            "resistance": 0.04
+        },
+        {
+            "name": "Brick (external leaf)",
+            "thickness": 0.12,
+            "density": 1700.0,
+            "specific_heat": 800.0,
+            "conductivity": 0.84,
+            "resistance": 0.0
+        },
+        {
+            "name": "Air gap",
+            "thickness": 0.0,
+            "density": 0.0,
+            "specific_heat": 0.0,
+            "conductivity": 0.0,
+            "resistance": 0.18
+        },
+        {
+            "name": "EPS insulation",
+            "thickness": 0.08,
+            "density": 25.0,
+            "specific_heat": 1400.0,
+            "conductivity": 0.035,
+            "resistance": 0.0
+        },
+        {
+            "name": "Hollow brick (internal leaf)",
+            "thickness": 0.08,
+            "density": 800.0,
+            "specific_heat": 1000.0,
+            "conductivity": 0.40,
+            "resistance": 0.0
+        },
+        {
+            "name": "Internal plaster",
+            "thickness": 0.015,
+            "density": 1400.0,
+            "specific_heat": 1000.0,
+            "conductivity": 0.7,
+            "resistance": 0.0
+        },
+        {
+            "name": "Internal surface resistance",
+            "thickness": 0.0,
+            "density": 0.0,
+            "specific_heat": 0.0,
+            "conductivity": 0.0,
+            "resistance": 0.13
+        }
+    ],
+    "temperature_profile": [
+        25.0, 24.0, 23.5, 23.0, 22.5, 23.0,
+        24.0, 26.0, 28.0, 30.0, 32.0, 34.0,
+        36.0, 37.0, 37.5, 37.0, 36.0, 34.0,
+        32.0, 30.0, 28.0, 27.0, 26.0, 25.5
+    ]
+}
