@@ -20,7 +20,7 @@ coefficients that allow to compute, at each time step, the heat flux at the
 internal surface as a function of the external (sol-air) temperature history
 and the internal air temperature.
 
-![CTF vs Fourier validation](docs/ctf_vs_fourier.png)
+![CTF vs Fourier validation](https://raw.githubusercontent.com/valeriolobrano/wall-ctf/main/docs/ctf_vs_fourier.png)
 
 *Comparison between the Z-transform (CTF) and Fourier (harmonic analysis)
 solutions for a heavy concrete wall (plaster 2cm + concrete 25cm + plaster 2cm).
