@@ -54,7 +54,7 @@ References:
     [3] Mitalas, G.P., Stephenson, D.G. (1967). Room Thermal Response
         Factors. ASHRAE Transactions, 73(1).
 
-Copyright (c) 2005-2026 Valerio Lo Brano, Universita degli Studi di Palermo.
+Copyright (c) 2005-2026 Valerio Lo Brano, Università degli Studi di Palermo.
 License: CC BY-NC 4.0 (non-commercial use).
 """
 

@@ -7,7 +7,7 @@
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![GitHub stars](https://img.shields.io/github/stars/valeriolobrano/wall-ctf)](https://github.com/valeriolobrano/wall-ctf)
 
-**Author:** Valerio Lo Brano - Universita degli Studi di Palermo
+**Author:** Valerio Lo Brano - Università degli Studi di Palermo
 
 CATI computes the Conduction Transfer Function (CTF) coefficients for
 multilayer wall assemblies using the Z-transform method. This is the same
@@ -15,13 +15,16 @@ mathematical approach used by TRNSYS, DOE-2, BLAST, TARP, and the ASHRAE
 Transfer Function Method (TFM) for dynamic thermal simulation of buildings.
 
 The algorithm was originally developed as part of the **Ph.D. dissertation of
-Valerio Lo Brano** at the Universita degli Studi di Palermo (Department of
+Valerio Lo Brano** at the Università degli Studi di Palermo (Department of
 Energy and Environmental Research - DREAM), and later refined and published
 in two peer-reviewed journal articles (see [How to cite](#how-to-cite)).
 The original implementation (software THELDA / CATI2005, written in VB.NET)
 was used to simulate the thermal behaviour of massive historical buildings
-in the Mediterranean area, where commercial tools like TRNSYS showed
-limitations due to the high thermal inertia of the walls.
+in the Mediterranean area, where the original Mitalas-Stephenson algorithm
+showed numerical limitations when applied to walls with high thermal inertia,
+typical of Southern European construction. The research led to the development
+of Procedure I (optimal pole and residue selection), which overcomes these
+limitations.
 
 Given the thermophysical properties of a wall (layer thicknesses, densities,
 specific heats, conductivities), CATI determines the Z-domain transfer function
@@ -54,56 +57,189 @@ of 0.15%.*
 
 ## Theoretical background
 
+### Why the Laplace transform?
+
+The thermal behaviour of a building wall is governed by the Fourier heat
+equation, a partial differential equation (PDE) that describes how
+temperature $\theta(x,t)$ and heat flux $q(x,t)$ vary through a solid material
+over time:
+
+$$\frac{\partial^2 \theta(x,t)}{\partial x^2} = \frac{1}{\alpha} \frac{\partial \theta(x,t)}{\partial t}$$
+
+where $\alpha = \lambda / (\rho \cdot C_p)$ is the thermal diffusivity.
+
+Solving this PDE directly in the time domain is complex. The **Laplace
+transform** converts the problem from the time domain into the complex
+frequency domain (the $s$-domain), where the PDE becomes an ordinary
+differential equation that can be solved algebraically. The procedure,
+as described by Carslaw and Jaeger (1959), is:
+
+1. Transform the time-domain equations into subsidiary equations in the
+   complex $s$-domain
+2. Solve the subsidiary equations by purely algebraic manipulation
+3. Apply the inverse transform to return to the time domain
+
 ### The thermal transmission matrix
 
-The non-steady-state heat transfer through a homogeneous isotropic layer can
-be described in the Laplace domain by a 2x2 transmission matrix that relates
-temperatures and heat fluxes on the two sides of the layer:
+In the Laplace domain, the relationship between temperature and heat flux
+on the two sides of a homogeneous isotropic layer of thickness $L$ can be
+written in a compact matrix form:
 
-```
-| T_e |   | a  b |   | T_i |
-|     | = |      | x |     |
-| Q_e |   | c  d |   | Q_i |
-```
+$$\begin{pmatrix} \theta(L,s) \\ q(L,s) \end{pmatrix} = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \begin{pmatrix} \theta(0,s) \\ q(0,s) \end{pmatrix}$$
 
-where, for a material layer of thickness *L*, conductivity *k*,
-density *rho*, specific heat *Cp*, and diffusivity *alpha = k/(rho\*Cp)*:
+where the elements of the transmission matrix $\mathbf{M}$ (whose determinant is
+unity) are:
 
-```
-a = d = cosh(L * sqrt(s/alpha))
-b = sinh(L * sqrt(s/alpha)) / (k * sqrt(s/alpha))
-c = k * sqrt(s/alpha) * sinh(L * sqrt(s/alpha))
-```
+$$a = d = \cosh\left(L\sqrt{\frac{s}{\alpha}}\right), \qquad b = \frac{\sinh\left(L\sqrt{\frac{s}{\alpha}}\right)}{\lambda\sqrt{\frac{s}{\alpha}}}, \qquad c = \lambda\sqrt{\frac{s}{\alpha}} \cdot \sinh\left(L\sqrt{\frac{s}{\alpha}}\right)$$
+
+with $\lambda$ [W/(m K)] the thermal conductivity, $\rho$ [kg/m^3] the density,
+$C_p$ [J/(kg K)] the specific heat, and $\alpha = \lambda/(\rho C_p)$ [m^2/s] the
+thermal diffusivity.
 
 For surface resistance layers (convective + radiative films) and air gaps,
-the matrix reduces to `[[1, R], [0, 1]]` where *R* is the thermal resistance.
+the matrix reduces to $\begin{pmatrix} 1 & R \\ 0 & 1 \end{pmatrix}$ where $R$ is the thermal resistance.
 
-For a multilayer wall, the overall matrix **M(s)** is the ordered product of
-all individual layer matrices, from the external surface to the internal one.
+For a **multilayer wall** composed of $n_w$ layers, the overall transmission
+matrix is simply the ordered product of all individual layer matrices, from
+the external surface ($x = 0$) to the internal one ($x = L$):
+
+$$\mathbf{M}(s) = \begin{pmatrix} A(s) & B(s) \\ C(s) & D(s) \end{pmatrix} = M_{e1} \times M_{e2} \times \cdots \times M_{en}$$
+
+where in general $a = d$ for each single layer, but $A \neq D$ for the overall
+wall. By inverting this system, the heat fluxes on both surfaces can be
+expressed as functions of the two surface temperatures alone:
+
+$$\begin{pmatrix} q(0,s) \\ q(L,s) \end{pmatrix} = \begin{pmatrix} D/B & -1/B \\ 1/B & -A/B \end{pmatrix} \begin{pmatrix} \theta(0,s) \\ \theta(L,s) \end{pmatrix}$$
+
+This is the fundamental relation for the determination of the transfer
+functions, both in the time domain and in the frequency domain.
+
+### Why the Z-transform?
+
+The Laplace-domain transfer function $G(s)$ describes a continuous-time system,
+but building simulation works with **discrete time steps** (typically 1 hour),
+driven by sampled climatic data (hourly temperature, solar radiation, etc.).
+The **Z-transform** is the discrete-time counterpart of the Laplace transform:
+for a continuous function $f(t)$ sampled at regular intervals $\Delta$, its
+Z-transform is obtained by the substitution $z = e^{s\Delta}$:
+
+$$f(0) + f(\Delta)z^{-1} + f(2\Delta)z^{-2} + \cdots$$
+
+This converts the Laplace-domain transfer function into a ratio of
+polynomials in $z^{-1}$, which leads directly to a **recursive formula**
+computable at each time step, using only past values of inputs and outputs.
+This is extremely efficient for long simulations (e.g. a full year at hourly
+resolution = 8760 time steps).
 
 ### From Laplace to Z-domain
 
-The heat flux at the internal surface can be expressed as:
+From the inverted transmission matrix, the heat flux at the internal surface
+of a single wall in the Z-transform domain is (Ref. [1], Eq. 11):
 
-```
-Q_i(z) = [1/B(z)] * T_e(z) - [A(z)/B(z)] * T_i(z)
-```
+$$Q_i(z) = \frac{1}{B(z)} \cdot T_e(z) - \frac{A(z)}{B(z)} \cdot T_i(z)$$
 
-where A and B are elements of the overall transmission matrix. The Z-transform
-coefficients are obtained through:
+where the two sub-transfer functions $1/B$ and $A/B$ link the heat flux
+respectively to the external (sol-air) and the internal air temperature.
+The transfer function $G(z) = \text{num}(z) / \text{den}(z)$ linking a generic
+input to the output is obtained through the following procedure.
 
-1. Finding the poles *s_n* (zeros of B(s) on the negative real axis)
-2. Heaviside partial-fraction expansion of the ramp response
-3. **Procedure I**: optimal selection of significant poles/residues
-4. Computation of the Z-domain denominator and numerator polynomials
+#### Step 1: Root finding
 
-The resulting recursive formula is:
+The poles $s_n$ of the system are the values of $s$ that make
+$\text{DEN}(s) = B(s) = 0$. Since the poles must lie on the negative part of the
+real axis, the substitution $\sqrt{s} = j\delta$ is used, reducing the search to the
+real numbers domain (Ref. [1], Sec. 3).
 
-```
-q_i(n*Delta) = SUM_j  b_j * T_e((n-j)*Delta)
-             - SUM_j  d_j * q_i((n-j)*Delta)
-             - T_i * SUM_j c_j
-```
+#### Step 2: Heaviside partial-fraction expansion
+
+Assuming a linear ramp as input signal, the Laplace-domain response is
+expanded as (Ref. [1], Eq. 4; Ref. [2], Eq. A.3):
+
+$$O(s) = \frac{1}{s^2} G(s) = \frac{1}{s^2} \frac{\text{NUM}(s)}{\text{DEN}(s)} = \frac{C_0}{s^2} + \frac{C_1}{s} + \sum_{n=1}^{\infty} \frac{\text{res}_n}{s - s_n}$$
+
+where $C_0$ and $C_1$ are the residuals linked to the double pole at the origin
+due to the ramp input, and $\text{res}_n$ are the residuals linked to the poles $s_n$:
+
+$$C_0 = \left[\frac{\text{NUM}(s)}{\text{DEN}(s)}\right]_{s=0}, \qquad \text{res}_n = \left[\frac{\text{NUM}(s)}{s^2 \, \text{DEN}'(s)}\right]_{s=s_n}$$
+
+The coefficient $C_1$ involves the derivatives $\text{DEN}'(s)$ and $\text{NUM}'(s)$
+evaluated at $s = 0$ (Ref. [1], Sec. 3). In practice, the **Mitalas instruction**
+sets $C_1 = -\sum \text{res}_n$ to ensure the response starts at zero for $t = 0$.
+
+The **inverse Laplace transform** returns the ramp response to the time domain:
+
+$$O(t) = \mathcal{L}^{-1}\left[I(s) \cdot G(s)\right] = C_0 t + C_1 + \sum_{n=1}^{N} d_n \, e^{\beta_n t}$$
+
+where $\beta_n = s_n < 0$ are the poles (all on the negative real axis for a
+passive thermal system). Each term $d_n \, e^{\beta_n t}$ is a decaying exponential
+that represents a thermal mode of the wall: poles close to zero correspond
+to slow modes (high thermal inertia), while poles far from zero correspond
+to fast modes that decay rapidly.
+
+#### Step 3: Procedure I (optimal pole selection)
+
+In theory, the thermal system has **infinitely many poles**. In practice, only
+a finite number $N$ can be computed. Moreover, not all poles contribute
+significantly to the system response: the fast-decaying modes (large
+$|\beta_n|$) have negligible effect after the first few time steps. Keeping
+too many poles, especially for massive walls, introduces numerical noise
+that can degrade the solution rather than improve it (Ref. [2], Sec. 4).
+
+**Procedure I** (Ref. [2], Sec. 5) addresses this by sorting residues by
+absolute value in descending order
+$|\hat{d}_1| > |\hat{d}_2| > \cdots > |\hat{d}_N|$ and retaining only the
+significant ones ($|\hat{d}_n| > \sigma$, with $\sigma = 10^{-10}$). The
+truncated transfer function $\hat{G}(s) = \sum_{n=1}^{\hat{N}} \hat{d}_n / (s - \hat{p}_n)$
+captures the essential dynamics of the wall while avoiding the numerical
+problems that arise from insignificant poles.
+
+#### Step 4: Z-domain transfer function
+
+The Z-transform of the sampled ramp response gives (Ref. [1], Eq. 5-6;
+Ref. [2], Eq. A.6):
+
+$$\frac{\text{num}(z)}{\text{den}(z)} = \frac{\dfrac{C_0 \Delta}{(1-z^{-1})^2} + \dfrac{C_1}{1-z^{-1}} + \displaystyle\sum_{n=1}^{N} \dfrac{\text{res}_n}{1-\mathrm{e}^{s_n \Delta} z^{-1}}}{\dfrac{C_0 \Delta}{z(1-z^{-1})}}$$
+
+where $\Delta$ is the sampling period and the Z-domain denominator is:
+
+$$\text{den}(z) = \prod_{n=1}^{N} \left(1 - \mathrm{e}^{s_n \Delta} \, z^{-1}\right)$$
+
+The numerator $\text{num}(z)$ is a polynomial obtained from the convolution of
+the sampled ramp response with the second differences of the denominator
+coefficients (Ref. [1], Eq. 5).
+
+#### Step 5: Recursive formula
+
+Applying the definition of the TFM and expanding the terms (Ref. [2],
+Eq. A.7-A.8), the generic partial output at time $n\Delta$ is:
+
+$$T_{x,i}(n\Delta) = \sum_{j=0}^{n} \text{num}_j \cdot I_i\!\left[(n-j)\Delta\right] - \sum_{j=1}^{n} \text{den}_j \cdot T_{x,i}\!\left[(n-j)\Delta\right]$$
+
+For the specific case of the wall heat flux, with the external (sol-air)
+temperature $T_e$ and the constant internal air temperature $T_i$ as inputs:
+
+$$q_i(n\Delta) = \sum_{j=0}^{n} b_j \cdot T_e\!\left[(n-j)\Delta\right] - \sum_{j=1}^{n} d_j \cdot q_i\!\left[(n-j)\Delta\right] - T_i \sum_{j=0}^{n} c_j$$
+
+where $b_j$ are the numerator coefficients of $1/B$ (external temperature
+contribution), $c_j$ are the numerator coefficients of $A/B$ (internal temperature
+contribution), and $d_j$ are the common denominator coefficients.
+
+This is a **recursive formula**: at each time step $n$, the output depends on
+the current and past input values and on the past output values. Once the
+coefficients $b_j$, $c_j$, $d_j$ are known, the computation is extremely fast:
+a single wall requires only a few multiplications and additions per time step,
+regardless of the wall's complexity. This is the key advantage of the TFM
+over finite-difference or finite-element methods.
+
+The global response of each inner surface temperature is obtained by
+superimposing all partial outputs from different inputs (Ref. [2], Eq. A.9):
+
+$$T_x(n\Delta) = \sum_{i}^{\text{all inputs}} T_{x,i}(n\Delta)$$
+
+Transfer function coefficients have to be calculated for each different pair
+of input-output (e.g. sol-air temperature, inner air temperature, inner
+thermal loads, etc.). All of the outputs referred to the same physical node
+are later summed to obtain the global response.
 
 ### Procedure I: optimal pole selection
 
@@ -115,7 +251,7 @@ instead of 5.
 
 CATI implements **Procedure I** from Ref. [2]: residues are sorted by absolute
 value in descending order, and only those above a significance threshold
-(|res_n| > 10^-10) are retained. This guarantees PME < 1% for all standard
+($|\text{res}_n| > 10^{-10}$) are retained. This guarantees PME < 1% for all standard
 wall constructions at 1-hour sampling period.
 
 ---
@@ -406,9 +542,7 @@ The CTF output is validated against an independent Fourier steady-state
 solution (harmonic analysis using the complex thermal quadrupole). The
 Percentage Mean Error (PME) is computed as in Ref. [2], Eq. (4-5):
 
-```
-PME = (1/24) * SUM_{tau=1}^{24} |T_Z(tau) - T_F(tau)| / |T_F(tau)| * 100
-```
+$$\text{PME} = \frac{1}{24} \sum_{\tau=1}^{24} \frac{\left| T_Z(\tau) - T_F(\tau) \right|}{\left| T_F(\tau) \right|} \times 100$$
 
 Typical results:
 
@@ -446,6 +580,6 @@ BibTeX entries are available in the [`CITATION.cff`](CITATION.cff) file.
 - **Attribution** must include a citation of the publications listed above.
 - Contact for commercial licensing: valerio.lobrano@unipa.it
 
-Copyright (c) 2005-2026 Valerio Lo Brano, Universita degli Studi di Palermo.
+Copyright (c) 2005-2026 Valerio Lo Brano, Università degli Studi di Palermo.
 
 See [`LICENSE`](LICENSE) for the full license text.

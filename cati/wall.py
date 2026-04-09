@@ -1,6 +1,6 @@
 """Wall and layer data model for multilayer wall assemblies.
 
-Copyright (c) 2005-2026 Valerio Lo Brano, Universita degli Studi di Palermo.
+Copyright (c) 2005-2026 Valerio Lo Brano, Università degli Studi di Palermo.
 License: CC BY-NC 4.0 (non-commercial use).
 """
 
