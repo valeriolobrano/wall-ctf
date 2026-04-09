@@ -1,8 +1,8 @@
 # wall-ctf (CATI) - Conduction Transfer Function Coefficients
 
 [![PyPI version](https://img.shields.io/pypi/v/wall-ctf)](https://pypi.org/project/wall-ctf/)
-[![PyPI downloads](https://img.shields.io/pypi/dm/wall-ctf)](https://pypi.org/project/wall-ctf/)
 [![Downloads](https://static.pepy.tech/badge/wall-ctf)](https://pepy.tech/projects/wall-ctf)
+[![Downloads/month](https://static.pepy.tech/badge/wall-ctf/month)](https://pepy.tech/projects/wall-ctf)
 [![Python](https://img.shields.io/pypi/pyversions/wall-ctf)](https://pypi.org/project/wall-ctf/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![GitHub stars](https://img.shields.io/github/stars/valeriolobrano/wall-ctf)](https://github.com/valeriolobrano/wall-ctf)
