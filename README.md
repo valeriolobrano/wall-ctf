@@ -4,7 +4,7 @@
 [![PyPI downloads](https://img.shields.io/pypi/dm/wall-ctf)](https://pypi.org/project/wall-ctf/)
 [![PyPI total downloads](https://img.shields.io/pypi/dt/wall-ctf)](https://pypi.org/project/wall-ctf/)
 [![Python](https://img.shields.io/pypi/pyversions/wall-ctf)](https://pypi.org/project/wall-ctf/)
-[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![GitHub stars](https://img.shields.io/github/stars/valeriolobrano/wall-ctf)](https://github.com/valeriolobrano/wall-ctf)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19480912.svg)](https://doi.org/10.5281/zenodo.19480912)
 
@@ -613,12 +613,15 @@ BibTeX entries are available in the [`CITATION.cff`](CITATION.cff) file.
 
 ## License
 
-**CC BY-NC 4.0** (Creative Commons Attribution-NonCommercial 4.0 International)
+**GPL-3.0-or-later** (GNU General Public License v3 or later)
 
-- **Free** for academic, educational, and non-commercial use with proper attribution.
-- **Commercial use** requires prior written permission from the copyright holder.
-- **Attribution** must include a citation of the publications listed above.
-- Contact for commercial licensing: valerio.lobrano@unipa.it
+- **Free** for academic, educational, and any use, including commercial.
+- **Copyleft**: any derivative work must be distributed under the same GPL license
+  and must release its source code.
+- **Citation required** (Section 7b): any use must cite the publications listed
+  above.
+- **Commercial licensing** without GPL obligations is available upon request.
+  Contact: valerio.lobrano@unipa.it
 
 Copyright (c) 2005-2026 Valerio Lo Brano, Università degli Studi di Palermo.
 

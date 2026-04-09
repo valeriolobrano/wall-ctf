@@ -1,43 +1,46 @@
-Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
+                    GNU GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
 
-Copyright (c) 2005-2026 Valerio Lo Brano
-Università degli Studi di Palermo
-Dipartimento di Ingegneria
+ Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
 
-This work is licensed under the Creative Commons
-Attribution-NonCommercial 4.0 International License.
+                            Preamble
 
-You are free to:
+  The GNU General Public License is a free, copyleft license for
+software and other kinds of works.
 
-  - Share: copy and redistribute the material in any medium or format
-  - Adapt: remix, transform, and build upon the material
+  The licenses for most software and other practical works are designed
+to take away your freedom to share and change the works.  By contrast,
+the GNU General Public License is intended to guarantee your freedom to
+share and change all versions of a program--to make sure it remains free
+software for all its users.  We, the Free Software Foundation, use the
+GNU General Public License for most of our software; it applies also to
+any other work released this way by its authors.  You can apply it to
+your programs, too.
 
-Under the following terms:
+  For the complete license text, see <https://www.gnu.org/licenses/gpl-3.0.txt>
 
-  - Attribution: You must give appropriate credit, provide a link to the
-    license, and indicate if changes were made. You must cite the following
-    publications:
+---
 
-    [1] G. Beccali, M. Cellura, V. Lo Brano, A. Orioli,
-        "Single thermal zone balance solved by Transfer Function Method",
-        Energy and Buildings, 37 (2005) 1268-1277.
-        DOI: 10.1016/j.enbuild.2005.02.010
+ADDITIONAL TERMS (pursuant to Section 7 of GPLv3):
 
-    [2] G. Beccali, M. Cellura, V. Lo Brano, A. Orioli,
-        "Is the transfer function method reliable in a European building
-        context? A theoretical analysis and a case study in the south
-        of Italy", Applied Thermal Engineering, 25 (2005) 341-357.
-        DOI: 10.1016/j.applthermaleng.2004.06.010
+Copyright (c) 2005-2026 Valerio Lo Brano, Università degli Studi di Palermo.
 
-  - NonCommercial: You may not use the material for commercial purposes
-    without obtaining prior written permission from the copyright holder.
+As an additional requirement under Section 7(b) of the GPLv3, any use of
+this software in academic, research, or commercial contexts must include
+a citation of the following publications:
 
-For commercial licensing inquiries, contact:
-  Valerio Lo Brano
-  valerio.lobrano@unipa.it
-  Università degli Studi di Palermo
+  [1] G. Beccali, M. Cellura, V. Lo Brano, A. Orioli,
+      "Single thermal zone balance solved by Transfer Function Method",
+      Energy and Buildings, 37 (2005) 1268-1277.
+      DOI: 10.1016/j.enbuild.2005.02.010
 
-No additional restrictions: You may not apply legal terms or technological
-measures that legally restrict others from doing anything the license permits.
+  [2] G. Beccali, M. Cellura, V. Lo Brano, A. Orioli,
+      "Is the transfer function method reliable in a European building
+      context? A theoretical analysis and a case study in the south
+      of Italy", Applied Thermal Engineering, 25 (2005) 341-357.
+      DOI: 10.1016/j.applthermaleng.2004.06.010
 
-Full license text: https://creativecommons.org/licenses/by-nc/4.0/legalcode
+For commercial licensing without the copyleft obligations of the GPL,
+contact: valerio.lobrano@unipa.it

@@ -1,10 +1,10 @@
 [project]
 name = "wall-ctf"
-version = "1.0.8"
+version = "1.1.0"
 description = "wall-ctf (CATI) - Conduction Transfer Function (CTF) coefficients for multilayer walls using the Mitalas-Stephenson / Z-transform method"
 readme = "README.md"
 requires-python = ">=3.12"
-license = {text = "CC-BY-NC-4.0"}
+license = {text = "GPL-3.0-or-later"}
 authors = [
     {name = "Valerio Lo Brano", email = "valerio.lobrano@unipa.it"},
 ]
@@ -18,7 +18,7 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Intended Audience :: Education",
     "Topic :: Scientific/Engineering :: Physics",
-    "License :: Other/Proprietary License",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]

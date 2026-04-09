@@ -1,7 +1,7 @@
 """Wall and layer data model for multilayer wall assemblies.
 
 Copyright (c) 2005-2026 Valerio Lo Brano, Università degli Studi di Palermo.
-License: CC BY-NC 4.0 (non-commercial use).
+License: GPL-3.0-or-later (with citation requirement per Section 7b).
 """
 
 from __future__ import annotations
