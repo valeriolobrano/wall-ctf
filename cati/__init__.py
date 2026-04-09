@@ -27,6 +27,6 @@ from cati.wall import Wall, Layer
 from cati.ctf import compute_ctf, compute_ctf_batch, CTFResult
 
 __all__ = ["Wall", "Layer", "compute_ctf", "compute_ctf_batch", "CTFResult"]
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 __author__ = "Valerio Lo Brano"
 __email__ = "valerio.lobrano@unipa.it"

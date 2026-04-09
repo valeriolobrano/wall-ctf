@@ -28,16 +28,22 @@ limitations.
 
 Given the thermophysical properties of a wall (layer thicknesses, densities,
 specific heats, conductivities), CATI determines the Z-domain transfer function
-coefficients that allow to compute, at each time step, the heat flux at the
-internal surface as a function of the external (sol-air) temperature history
-and the internal air temperature.
+coefficients that relate the heat flux at the internal surface to any generic
+input signal (external temperature, sol-air temperature, internal loads, etc.).
+**Once computed, the coefficients are a property of the wall itself** and can
+be reused for any input signal, any number of times, without recalculation.
+This is the key advantage of the method: the expensive computation is done
+once, and the subsequent simulations are extremely fast.
 
 ![CTF vs Fourier validation](https://raw.githubusercontent.com/valeriolobrano/wall-ctf/main/docs/ctf_vs_fourier.png)
 
-*Comparison between the Z-transform (CTF) and Fourier (harmonic analysis)
-solutions for a heavy concrete wall (plaster 2cm + concrete 25cm + plaster 2cm).
-The two curves are virtually indistinguishable, with a Percentage Mean Error
-of 0.15%.*
+*Validation example: comparison between the Z-transform (CTF) output and the
+independent Fourier (harmonic analysis) reference solution for a heavy concrete
+wall (plaster 2cm + concrete 25cm + plaster 2cm), subjected to a periodic
+temperature profile. The two curves are virtually indistinguishable (PME = 0.15%),
+confirming that the selected set of poles and residues accurately represents the
+wall's thermal dynamics. Once these coefficients are computed, they can be reused
+with any arbitrary input signal.*
 
 ---
 
@@ -85,31 +91,39 @@ In the Laplace domain, the relationship between temperature and heat flux
 on the two sides of a homogeneous isotropic layer of thickness $L$ can be
 written in a compact matrix form:
 
-$$\begin{pmatrix} \theta(L,s) \\ q(L,s) \end{pmatrix} = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \begin{pmatrix} \theta(0,s) \\ q(0,s) \end{pmatrix}$$
+$$\left\lbrace\begin{matrix} \theta(L,s) \\\ q(L,s) \end{matrix}\right\rbrace = \left[\begin{matrix} a & b \\\ c & d \end{matrix}\right] \times \left\lbrace\begin{matrix} \theta(0,s) \\\ q(0,s) \end{matrix}\right\rbrace$$
 
-where the elements of the transmission matrix $\mathbf{M}$ (whose determinant is
+where the elements of the transmission matrix **M** (whose determinant is
 unity) are:
 
-$$a = d = \cosh\left(L\sqrt{\frac{s}{\alpha}}\right), \qquad b = \frac{\sinh\left(L\sqrt{\frac{s}{\alpha}}\right)}{\lambda\sqrt{\frac{s}{\alpha}}}, \qquad c = \lambda\sqrt{\frac{s}{\alpha}} \cdot \sinh\left(L\sqrt{\frac{s}{\alpha}}\right)$$
+$$a = d = \cosh\left(L\sqrt{\frac{s}{\alpha}}\right)$$
 
-with $\lambda$ [W/(m K)] the thermal conductivity, $\rho$ [kg/m^3] the density,
-$C_p$ [J/(kg K)] the specific heat, and $\alpha = \lambda/(\rho C_p)$ [m^2/s] the
+$$b = \frac{\sinh\left(L\sqrt{\frac{s}{\alpha}}\right)}{\lambda\sqrt{\frac{s}{\alpha}}}$$
+
+$$c = \lambda\sqrt{\frac{s}{\alpha}} \cdot \sinh\left(L\sqrt{\frac{s}{\alpha}}\right)$$
+
+with $\lambda$ \[W/(m K)\] the thermal conductivity, $\rho$ \[kg/m^3\] the density,
+$C_p$ \[J/(kg K)\] the specific heat, and $\alpha = \lambda/(\rho C_p)$ \[m^2/s\] the
 thermal diffusivity.
 
 For surface resistance layers (convective + radiative films) and air gaps,
-the matrix reduces to $\begin{pmatrix} 1 & R \\ 0 & 1 \end{pmatrix}$ where $R$ is the thermal resistance.
+the matrix is simply:
+
+$$\left[\begin{matrix} 1 & R \\\ 0 & 1 \end{matrix}\right]$$
+
+where $R$ is the thermal resistance.
 
 For a **multilayer wall** composed of $n_w$ layers, the overall transmission
-matrix is simply the ordered product of all individual layer matrices, from
-the external surface ($x = 0$) to the internal one ($x = L$):
+matrix is the ordered product of all individual layer matrices, from the
+external surface ($x = 0$) to the internal one ($x = L$):
 
-$$\mathbf{M}(s) = \begin{pmatrix} A(s) & B(s) \\ C(s) & D(s) \end{pmatrix} = M_{e1} \times M_{e2} \times \cdots \times M_{en}$$
+$$\left[\begin{matrix} A(s) & B(s) \\\ C(s) & D(s) \end{matrix}\right] = \left[\begin{matrix} a_1 & b_1 \\\ c_1 & d_1 \end{matrix}\right] \times \left[\begin{matrix} a_2 & b_2 \\\ c_2 & d_2 \end{matrix}\right] \times \cdots \times \left[\begin{matrix} a_n & b_n \\\ c_n & d_n \end{matrix}\right]$$
 
 where in general $a = d$ for each single layer, but $A \neq D$ for the overall
 wall. By inverting this system, the heat fluxes on both surfaces can be
 expressed as functions of the two surface temperatures alone:
 
-$$\begin{pmatrix} q(0,s) \\ q(L,s) \end{pmatrix} = \begin{pmatrix} D/B & -1/B \\ 1/B & -A/B \end{pmatrix} \begin{pmatrix} \theta(0,s) \\ \theta(L,s) \end{pmatrix}$$
+$$\left\lbrace\begin{matrix} q(0,s) \\\ q(L,s) \end{matrix}\right\rbrace = \left[\begin{matrix} D/B & -1/B \\\ 1/B & -A/B \end{matrix}\right] \times \left\lbrace\begin{matrix} \theta(0,s) \\\ \theta(L,s) \end{matrix}\right\rbrace$$
 
 This is the fundamental relation for the determination of the transfer
 functions, both in the time domain and in the frequency domain.
@@ -140,8 +154,17 @@ $$Q_i(z) = \frac{1}{B(z)} \cdot T_e(z) - \frac{A(z)}{B(z)} \cdot T_i(z)$$
 
 where the two sub-transfer functions $1/B$ and $A/B$ link the heat flux
 respectively to the external (sol-air) and the internal air temperature.
-The transfer function $G(z) = \text{num}(z) / \text{den}(z)$ linking a generic
-input to the output is obtained through the following procedure.
+
+Each sub-transfer function can be written as a ratio of two polynomials
+in $z^{-1}$:
+
+$$G(z) = \frac{\text{num}(z)}{\text{den}(z)} = \frac{\text{num}_0 + \text{num}_1 z^{-1} + \text{num}_2 z^{-2} + \cdots + \text{num}_n z^{-n}}{1 + \text{den}_1 z^{-1} + \text{den}_2 z^{-2} + \cdots + \text{den}_n z^{-n}}$$
+
+where num (numerator) and den (denominator) are in principle polynomials of
+**infinite** order, since the thermal system possesses infinitely many poles.
+In practice, the series is truncated to a finite number $N$ of terms. The
+numerator and denominator coefficients are the CTF coefficients computed by
+CATI. The procedure to determine them is the following.
 
 #### Step 1: Root finding
 
@@ -330,12 +353,13 @@ print(f"Significant poles: {result.n_poles}")
 print(f"Effective coefficients: {result.n_coefficients}")
 ```
 
-### With Fourier validation
+### With Fourier validation (quality check)
 
 ```python
 import numpy as np
 
-# 24-hour sol-air temperature profile (hourly, 25 values with wrap-around)
+# 24-hour periodic temperature profile for validation (hourly, 25 values with wrap-around)
+# This can be any signal: sol-air temperature, outdoor air temperature, etc.
 profile = np.array([
     25.0, 24.0, 23.5, 23.0, 22.5, 23.0,   # 0h-5h
     24.0, 26.0, 28.0, 30.0, 32.0, 34.0,   # 6h-11h
@@ -357,6 +381,8 @@ result = compute_ctf(
 
 print(f"Fourier validation error: {result.fourier_error:.2f}%")
 # Output: Fourier validation error: 0.15%
+# A low error confirms the CTF coefficients are accurate for this wall.
+# These coefficients can now be reused with ANY input signal.
 ```
 
 ### Using the CTF coefficients in a simulation
@@ -538,13 +564,23 @@ uv run cati examples/heavy_wall.json --roots 30 --coefficients 20
 
 ## Validation
 
-The CTF output is validated against an independent Fourier steady-state
-solution (harmonic analysis using the complex thermal quadrupole). The
-Percentage Mean Error (PME) is computed as in Ref. [2], Eq. (4-5):
+The purpose of the Fourier comparison is **not** to provide an alternative
+simulation method, but to verify whether the finite set of poles and residues
+selected by CATI is a good approximation of the wall's exact (infinite-order)
+transfer function. The Fourier (harmonic) solution uses the complex thermal
+quadrupole to compute the exact periodic steady-state response for a given
+input signal. Since this approach operates in the frequency domain, it must
+be recomputed entirely for every different input signal, making it unsuitable
+for general-purpose simulation. On the contrary, the CTF coefficients are
+computed once and reused for any input.
+
+The Percentage Mean Error (PME) between the CTF output and the Fourier
+reference is computed as in Ref. [2], Eq. (4-5):
 
 $$\text{PME} = \frac{1}{24} \sum_{\tau=1}^{24} \frac{\left| T_Z(\tau) - T_F(\tau) \right|}{\left| T_F(\tau) \right|} \times 100$$
 
-Typical results:
+A low PME confirms that the truncated set of poles/residues faithfully
+represents the wall's thermal dynamics. Typical results:
 
 | Wall type | Thickness | U [W/m^2K] | PME |
 |---|---|---|---|
