@@ -239,12 +239,12 @@ coefficients (Ref. [1], Eq. 5).
 Applying the definition of the TFM and expanding the terms (Ref. [2],
 Eq. A.7-A.8), the generic partial output at time $n\Delta$ is:
 
-$$T_{x,i}(n\Delta) = \sum_{j=0}^{n} \text{num}_j \cdot I_i\!\left[(n-j)\Delta\right] - \sum_{j=1}^{n} \text{den}_j \cdot T_{x,i}\!\left[(n-j)\Delta\right]$$
+$$T_{x,i}(n\Delta) = \sum_{j=0}^{n} \text{num}_j \cdot I_i\left[(n-j)\Delta\right] - \sum_{j=1}^{n} \text{den}_j \cdot T_{x,i}\left[(n-j)\Delta\right]$$
 
 For the specific case of the wall heat flux, with the external (sol-air)
 temperature $T_e$ and the constant internal air temperature $T_i$ as inputs:
 
-$$q_i(n\Delta) = \sum_{j=0}^{n} b_j \cdot T_e\!\left[(n-j)\Delta\right] - \sum_{j=1}^{n} d_j \cdot q_i\!\left[(n-j)\Delta\right] - T_i \sum_{j=0}^{n} c_j$$
+$$q_i(n\Delta) = \sum_{j=0}^{n} b_j \cdot T_e\left[(n-j)\Delta\right] - \sum_{j=1}^{n} d_j \cdot q_i\left[(n-j)\Delta\right] - T_i \sum_{j=0}^{n} c_j$$
 
 where $b_j$ are the numerator coefficients of $1/B$ (external temperature
 contribution), $c_j$ are the numerator coefficients of $A/B$ (internal temperature
