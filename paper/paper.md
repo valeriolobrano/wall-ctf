@@ -9,7 +9,7 @@ tags:
   - thermal inertia
 authors:
   - name: Valerio Lo Brano
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0002-5728-0379
     affiliation: 1
 affiliations:
   - name: Department of Engineering, Università degli Studi di Palermo, Italy
