@@ -157,13 +157,4 @@ Additional tests with lightweight walls (wood, 10 cm), two-layer walls
 (brick + concrete), and various sampling periods confirm PME values
 consistently below 5% for standard constructions.
 
-# Acknowledgements
-
-The algorithm was originally developed as part of the Ph.D. dissertation
-of Valerio Lo Brano at the Università degli Studi di Palermo (Department of
-Energy and Environmental Research - DREAM), under the supervision of
-Prof. Giorgio Beccali and Prof. Aldo Orioli. The author acknowledges the
-contribution of Prof. Maurizio Cellura to the journal publications that
-formalised the method.
-
 # References
