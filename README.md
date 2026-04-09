@@ -6,7 +6,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/wall-ctf)](https://pypi.org/project/wall-ctf/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![GitHub stars](https://img.shields.io/github/stars/valeriolobrano/wall-ctf)](https://github.com/valeriolobrano/wall-ctf)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19480912.svg)](https://doi.org/10.5281/zenodo.19480912)
+[![DOI](https://zenodo.org/badge/1205101209.svg)](https://doi.org/10.5281/zenodo.19480911)
 
 **Author:** Valerio Lo Brano - Università degli Studi di Palermo
 
