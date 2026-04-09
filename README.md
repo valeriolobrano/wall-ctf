@@ -212,7 +212,10 @@ that can degrade the solution rather than improve it (Ref. [2], Sec. 4).
 absolute value in descending order
 $|\hat{d}_1| > |\hat{d}_2| > \cdots > |\hat{d}_N|$ and retaining only the
 significant ones ($|\hat{d}_n| > \sigma$, with $\sigma = 10^{-10}$). The
-truncated transfer function $\hat{G}(s) = \sum_{n=1}^{\hat{N}} \hat{d}_n / (s - \hat{p}_n)$
+truncated transfer function:
+
+$$\hat{G}(s) = \sum_{n=1}^{\hat{N}} \frac{\hat{d}_n}{s - \hat{p}_n}$$
+
 captures the essential dynamics of the wall while avoiding the numerical
 problems that arise from insignificant poles.
 
