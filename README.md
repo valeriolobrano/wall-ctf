@@ -67,28 +67,28 @@ with any arbitrary input signal.*
 
 The thermal behaviour of a building wall is governed by the Fourier heat
 equation, a partial differential equation (PDE) that describes how
-temperature $\theta(x,t)$ and heat flux $q(x,t)$ vary through a solid material
+temperature **θ(x,t)** and heat flux **q(x,t)** vary through a solid material
 over time:
 
 $$\frac{\partial^2 \theta(x,t)}{\partial x^2} = \frac{1}{\alpha} \frac{\partial \theta(x,t)}{\partial t}$$
 
-where $\alpha = \lambda / (\rho \cdot C_p)$ is the thermal diffusivity.
+where **α = λ / (ρ · Cp)** is the thermal diffusivity.
 
 Solving this PDE directly in the time domain is complex. The **Laplace
 transform** converts the problem from the time domain into the complex
-frequency domain (the $s$-domain), where the PDE becomes an ordinary
+frequency domain (the **s**-domain), where the PDE becomes an ordinary
 differential equation that can be solved algebraically. The procedure,
 as described by Carslaw and Jaeger (1959), is:
 
 1. Transform the time-domain equations into subsidiary equations in the
-   complex $s$-domain
+   complex **s**-domain
 2. Solve the subsidiary equations by purely algebraic manipulation
 3. Apply the inverse transform to return to the time domain
 
 ### The thermal transmission matrix
 
 In the Laplace domain, the relationship between temperature and heat flux
-on the two sides of a homogeneous isotropic layer of thickness $L$ can be
+on the two sides of a homogeneous isotropic layer of thickness **L** can be
 written in a compact matrix form:
 
 $$\left\lbrace\begin{matrix} \theta(L,s) \\\ q(L,s) \end{matrix}\right\rbrace = \left[\begin{matrix} a & b \\\ c & d \end{matrix}\right] \times \left\lbrace\begin{matrix} \theta(0,s) \\\ q(0,s) \end{matrix}\right\rbrace$$
@@ -102,8 +102,8 @@ $$b = \frac{\sinh\left(L\sqrt{\frac{s}{\alpha}}\right)}{\lambda\sqrt{\frac{s}{\a
 
 $$c = \lambda\sqrt{\frac{s}{\alpha}} \cdot \sinh\left(L\sqrt{\frac{s}{\alpha}}\right)$$
 
-with $\lambda$ \[W/(m K)\] the thermal conductivity, $\rho$ \[kg/m^3\] the density,
-$C_p$ \[J/(kg K)\] the specific heat, and $\alpha = \lambda/(\rho C_p)$ \[m^2/s\] the
+with **λ** [W/(m K)] the thermal conductivity, **ρ** [kg/m³] the density,
+**Cp** [J/(kg K)] the specific heat, and **α = λ/(ρ·Cp)** [m²/s] the
 thermal diffusivity.
 
 For surface resistance layers (convective + radiative films) and air gaps,
@@ -111,15 +111,15 @@ the matrix is simply:
 
 $$\left[\begin{matrix} 1 & R \\\ 0 & 1 \end{matrix}\right]$$
 
-where $R$ is the thermal resistance.
+where **R** is the thermal resistance.
 
-For a **multilayer wall** composed of $n_w$ layers, the overall transmission
+For a **multilayer wall** composed of **n** layers, the overall transmission
 matrix is the ordered product of all individual layer matrices, from the
-external surface ($x = 0$) to the internal one ($x = L$):
+external surface (x = 0) to the internal one (x = L):
 
 $$\left[\begin{matrix} A(s) & B(s) \\\ C(s) & D(s) \end{matrix}\right] = \left[\begin{matrix} a_1 & b_1 \\\ c_1 & d_1 \end{matrix}\right] \times \left[\begin{matrix} a_2 & b_2 \\\ c_2 & d_2 \end{matrix}\right] \times \cdots \times \left[\begin{matrix} a_n & b_n \\\ c_n & d_n \end{matrix}\right]$$
 
-where in general $a = d$ for each single layer, but $A \neq D$ for the overall
+where in general **a = d** for each single layer, but **A ≠ D** for the overall
 wall. By inverting this system, the heat fluxes on both surfaces can be
 expressed as functions of the two surface temperatures alone:
 
@@ -130,17 +130,17 @@ functions, both in the time domain and in the frequency domain.
 
 ### Why the Z-transform?
 
-The Laplace-domain transfer function $G(s)$ describes a continuous-time system,
+The Laplace-domain transfer function **G(s)** describes a continuous-time system,
 but building simulation works with **discrete time steps** (typically 1 hour),
 driven by sampled climatic data (hourly temperature, solar radiation, etc.).
 The **Z-transform** is the discrete-time counterpart of the Laplace transform:
-for a continuous function $f(t)$ sampled at regular intervals $\Delta$, its
-Z-transform is obtained by the substitution $z = e^{s\Delta}$:
+for a continuous function **f(t)** sampled at regular intervals **Δ**, its
+Z-transform is obtained by the substitution **z = e^(sΔ)**:
 
 $$f(0) + f(\Delta)z^{-1} + f(2\Delta)z^{-2} + \cdots$$
 
 This converts the Laplace-domain transfer function into a ratio of
-polynomials in $z^{-1}$, which leads directly to a **recursive formula**
+polynomials in **z⁻¹**, which leads directly to a **recursive formula**
 computable at each time step, using only past values of inputs and outputs.
 This is extremely efficient for long simulations (e.g. a full year at hourly
 resolution = 8760 time steps).
@@ -152,25 +152,25 @@ of a single wall in the Z-transform domain is (Ref. [1], Eq. 11):
 
 $$Q_i(z) = \frac{1}{B(z)} \cdot T_e(z) - \frac{A(z)}{B(z)} \cdot T_i(z)$$
 
-where the two sub-transfer functions $1/B$ and $A/B$ link the heat flux
+where the two sub-transfer functions **1/B** and **A/B** link the heat flux
 respectively to the external (sol-air) and the internal air temperature.
 
 Each sub-transfer function can be written as a ratio of two polynomials
-in $z^{-1}$:
+in **z⁻¹**:
 
 $$G(z) = \frac{N(z)}{D(z)} = \frac{b_0 + b_1 z^{-1} + b_2 z^{-2} + \cdots + b_n z^{-n}}{1 + d_1 z^{-1} + d_2 z^{-2} + \cdots + d_n z^{-n}}$$
 
-where $N(z)$ (numerator) and $D(z)$ (denominator) are in principle polynomials
+where **N(z)** (numerator) and **D(z)** (denominator) are in principle polynomials
 of **infinite** order, since the thermal system possesses infinitely many poles.
-In practice, the series is truncated to a finite number $N$ of terms. The
-coefficients $b_j$ and $d_j$ are the CTF coefficients computed by CATI.
+In practice, the series is truncated to a finite number **N** of terms. The
+coefficients **b_j** and **d_j** are the CTF coefficients computed by CATI.
 The procedure to determine them is the following.
 
 #### Step 1: Root finding
 
-The poles $s_n$ of the system are the values of $s$ that make
-$\text{DEN}(s) = B(s) = 0$. Since the poles must lie on the negative part of the
-real axis, the substitution $\sqrt{s} = j\delta$ is used, reducing the search to the
+The poles **sₙ** of the system are the values of **s** that make
+**DEN(s) = B(s) = 0**. Since the poles must lie on the negative part of the
+real axis, the substitution **√s = jδ** is used, reducing the search to the
 real numbers domain (Ref. [1], Sec. 3).
 
 #### Step 2: Heaviside partial-fraction expansion
@@ -180,21 +180,21 @@ expanded as (Ref. [1], Eq. 4; Ref. [2], Eq. A.3):
 
 $$O(s) = \frac{1}{s^2} G(s) = \frac{1}{s^2} \frac{\text{NUM}(s)}{\text{DEN}(s)} = \frac{C_0}{s^2} + \frac{C_1}{s} + \sum_{n=1}^{\infty} \frac{\text{res}_n}{s - s_n}$$
 
-where $C_0$ and $C_1$ are the residuals linked to the double pole at the origin
-due to the ramp input, and $\text{res}_n$ are the residuals linked to the poles $s_n$:
+where **C₀** and **C₁** are the residuals linked to the double pole at the origin
+due to the ramp input, and **resₙ** are the residuals linked to the poles **sₙ**:
 
 $$C_0 = \left[\frac{\text{NUM}(s)}{\text{DEN}(s)}\right]_{s=0}, \qquad \text{res}_n = \left[\frac{\text{NUM}(s)}{s^2 \, \text{DEN}'(s)}\right]_{s=s_n}$$
 
-The coefficient $C_1$ involves the derivatives $\text{DEN}'(s)$ and $\text{NUM}'(s)$
-evaluated at $s = 0$ (Ref. [1], Sec. 3). In practice, the **Mitalas instruction**
-sets $C_1 = -\sum \text{res}_n$ to ensure the response starts at zero for $t = 0$.
+The coefficient **C₁** involves the derivatives **DEN'(s)** and **NUM'(s)**
+evaluated at **s = 0** (Ref. [1], Sec. 3). In practice, the **Mitalas instruction**
+sets **C₁ = −Σ resₙ** to ensure the response starts at zero for **t = 0**.
 
 The **inverse Laplace transform** returns the ramp response to the time domain:
 
 $$O(t) = \mathcal{L}^{-1}\left[I(s) \cdot G(s)\right] = C_0 t + C_1 + \sum_{n=1}^{N} d_n \, e^{\beta_n t}$$
 
-where $\beta_n = s_n < 0$ are the poles (all on the negative real axis for a
-passive thermal system). Each term $d_n \, e^{\beta_n t}$ is a decaying exponential
+where **βₙ = sₙ < 0** are the poles (all on the negative real axis for a
+passive thermal system). Each term **dₙ · e^(βₙt)** is a decaying exponential
 that represents a thermal mode of the wall: poles close to zero correspond
 to slow modes (high thermal inertia), while poles far from zero correspond
 to fast modes that decay rapidly.
@@ -202,16 +202,16 @@ to fast modes that decay rapidly.
 #### Step 3: Procedure I (optimal pole selection)
 
 In theory, the thermal system has **infinitely many poles**. In practice, only
-a finite number $N$ can be computed. Moreover, not all poles contribute
+a finite number **N** can be computed. Moreover, not all poles contribute
 significantly to the system response: the fast-decaying modes (large
-$|\beta_n|$) have negligible effect after the first few time steps. Keeping
+**|βₙ|**) have negligible effect after the first few time steps. Keeping
 too many poles, especially for massive walls, introduces numerical noise
 that can degrade the solution rather than improve it (Ref. [2], Sec. 4).
 
 **Procedure I** (Ref. [2], Sec. 5) addresses this by sorting residues by
 absolute value in descending order
-$|\hat{d}_1| > |\hat{d}_2| > \cdots > |\hat{d}_N|$ and retaining only the
-significant ones ($|\hat{d}_n| > \sigma$, with $\sigma = 10^{-10}$). The
+**|d̂₁| > |d̂₂| > ··· > |d̂ₙ|** and retaining only the
+significant ones (**|d̂ₙ| > σ**, with **σ = 10⁻¹⁰**). The
 truncated transfer function:
 
 $$\hat{G}(s) = \sum_{n=1}^{\hat{N}} \frac{\hat{d}_n}{s - \hat{p}_n}$$
@@ -226,33 +226,33 @@ Ref. [2], Eq. A.6):
 
 $$\frac{N(z)}{D(z)} = \frac{\dfrac{C_0 \Delta}{(1-z^{-1})^2} + \dfrac{C_1}{1-z^{-1}} + \displaystyle\sum_{n=1}^{N} \dfrac{\text{res}_n}{1-\mathrm{e}^{s_n \Delta} z^{-1}}}{\dfrac{C_0 \Delta}{z(1-z^{-1})}}$$
 
-where $\Delta$ is the sampling period and the Z-domain denominator is:
+where **Δ** is the sampling period and the Z-domain denominator is:
 
 $$D(z) = \prod_{n=1}^{N} \left(1 - \mathrm{e}^{s_n \Delta} \, z^{-1}\right)$$
 
-The numerator $N(z)$ is a polynomial obtained from the convolution of
+The numerator **N(z)** is a polynomial obtained from the convolution of
 the sampled ramp response with the second differences of the denominator
 coefficients (Ref. [1], Eq. 5).
 
 #### Step 5: Recursive formula
 
 Applying the definition of the TFM and expanding the terms (Ref. [2],
-Eq. A.7-A.8), the generic partial output at time $n\Delta$ is:
+Eq. A.7-A.8), the generic partial output at time **nΔ** is:
 
 $$T_{x,i}(n\Delta) = \sum_{j=0}^{n} b_j \cdot I_i\left[(n-j)\Delta\right] - \sum_{j=1}^{n} d_j \cdot T_{x,i}\left[(n-j)\Delta\right]$$
 
-For the specific case of the wall heat flux, with the external (sol-air)
-temperature $T_e$ and the constant internal air temperature $T_i$ as inputs:
+For the specific case of the wall heat flux, with the external temperature
+**T_e** and the constant internal air temperature **T_i** as inputs:
 
 $$q_i(n\Delta) = \sum_{j=0}^{n} b_j \cdot T_e\left[(n-j)\Delta\right] - \sum_{j=1}^{n} d_j \cdot q_i\left[(n-j)\Delta\right] - T_i \sum_{j=0}^{n} c_j$$
 
-where $b_j$ are the numerator coefficients of $1/B$ (external temperature
-contribution), $c_j$ are the numerator coefficients of $A/B$ (internal temperature
-contribution), and $d_j$ are the common denominator coefficients.
+where **b_j** are the numerator coefficients of **1/B** (external temperature
+contribution), **c_j** are the numerator coefficients of **A/B** (internal temperature
+contribution), and **d_j** are the common denominator coefficients.
 
-This is a **recursive formula**: at each time step $n$, the output depends on
+This is a **recursive formula**: at each time step **n**, the output depends on
 the current and past input values and on the past output values. Once the
-coefficients $b_j$, $c_j$, $d_j$ are known, the computation is extremely fast:
+coefficients **b_j**, **c_j**, **d_j** are known, the computation is extremely fast:
 a single wall requires only a few multiplications and additions per time step,
 regardless of the wall's complexity. This is the key advantage of the TFM
 over finite-difference or finite-element methods.
@@ -277,7 +277,7 @@ instead of 5.
 
 CATI implements **Procedure I** from Ref. [2]: residues are sorted by absolute
 value in descending order, and only those above a significance threshold
-($|\text{res}_n| > 10^{-10}$) are retained. This guarantees PME < 1% for all standard
+(**|resₙ| > 10⁻¹⁰**) are retained. This guarantees PME < 1% for all standard
 wall constructions at 1-hour sampling period.
 
 ---

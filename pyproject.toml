@@ -1,6 +1,6 @@
 [project]
 name = "wall-ctf"
-version = "1.0.7"
+version = "1.0.8"
 description = "wall-ctf (CATI) - Conduction Transfer Function (CTF) coefficients for multilayer walls using the Mitalas-Stephenson / Z-transform method"
 readme = "README.md"
 requires-python = ">=3.12"
