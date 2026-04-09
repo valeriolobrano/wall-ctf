@@ -158,13 +158,13 @@ respectively to the external (sol-air) and the internal air temperature.
 Each sub-transfer function can be written as a ratio of two polynomials
 in $z^{-1}$:
 
-$$G(z) = \frac{\text{num}(z)}{\text{den}(z)} = \frac{\text{num}_0 + \text{num}_1 z^{-1} + \text{num}_2 z^{-2} + \cdots + \text{num}_n z^{-n}}{1 + \text{den}_1 z^{-1} + \text{den}_2 z^{-2} + \cdots + \text{den}_n z^{-n}}$$
+$$G(z) = \frac{N(z)}{D(z)} = \frac{b_0 + b_1 z^{-1} + b_2 z^{-2} + \cdots + b_n z^{-n}}{1 + d_1 z^{-1} + d_2 z^{-2} + \cdots + d_n z^{-n}}$$
 
-where num (numerator) and den (denominator) are in principle polynomials of
-**infinite** order, since the thermal system possesses infinitely many poles.
+where $N(z)$ (numerator) and $D(z)$ (denominator) are in principle polynomials
+of **infinite** order, since the thermal system possesses infinitely many poles.
 In practice, the series is truncated to a finite number $N$ of terms. The
-numerator and denominator coefficients are the CTF coefficients computed by
-CATI. The procedure to determine them is the following.
+coefficients $b_j$ and $d_j$ are the CTF coefficients computed by CATI.
+The procedure to determine them is the following.
 
 #### Step 1: Root finding
 
@@ -224,13 +224,13 @@ problems that arise from insignificant poles.
 The Z-transform of the sampled ramp response gives (Ref. [1], Eq. 5-6;
 Ref. [2], Eq. A.6):
 
-$$\frac{\text{num}(z)}{\text{den}(z)} = \frac{\dfrac{C_0 \Delta}{(1-z^{-1})^2} + \dfrac{C_1}{1-z^{-1}} + \displaystyle\sum_{n=1}^{N} \dfrac{\text{res}_n}{1-\mathrm{e}^{s_n \Delta} z^{-1}}}{\dfrac{C_0 \Delta}{z(1-z^{-1})}}$$
+$$\frac{N(z)}{D(z)} = \frac{\dfrac{C_0 \Delta}{(1-z^{-1})^2} + \dfrac{C_1}{1-z^{-1}} + \displaystyle\sum_{n=1}^{N} \dfrac{\text{res}_n}{1-\mathrm{e}^{s_n \Delta} z^{-1}}}{\dfrac{C_0 \Delta}{z(1-z^{-1})}}$$
 
 where $\Delta$ is the sampling period and the Z-domain denominator is:
 
-$$\text{den}(z) = \prod_{n=1}^{N} \left(1 - \mathrm{e}^{s_n \Delta} \, z^{-1}\right)$$
+$$D(z) = \prod_{n=1}^{N} \left(1 - \mathrm{e}^{s_n \Delta} \, z^{-1}\right)$$
 
-The numerator $\text{num}(z)$ is a polynomial obtained from the convolution of
+The numerator $N(z)$ is a polynomial obtained from the convolution of
 the sampled ramp response with the second differences of the denominator
 coefficients (Ref. [1], Eq. 5).
 
@@ -239,7 +239,7 @@ coefficients (Ref. [1], Eq. 5).
 Applying the definition of the TFM and expanding the terms (Ref. [2],
 Eq. A.7-A.8), the generic partial output at time $n\Delta$ is:
 
-$$T_{x,i}(n\Delta) = \sum_{j=0}^{n} \text{num}_j \cdot I_i\left[(n-j)\Delta\right] - \sum_{j=1}^{n} \text{den}_j \cdot T_{x,i}\left[(n-j)\Delta\right]$$
+$$T_{x,i}(n\Delta) = \sum_{j=0}^{n} b_j \cdot I_i\left[(n-j)\Delta\right] - \sum_{j=1}^{n} d_j \cdot T_{x,i}\left[(n-j)\Delta\right]$$
 
 For the specific case of the wall heat flux, with the external (sol-air)
 temperature $T_e$ and the constant internal air temperature $T_i$ as inputs:
