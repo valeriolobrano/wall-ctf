@@ -14,6 +14,9 @@ through multilayer wall assemblies, using the method described in:
         of Italy", Applied Thermal Engineering, 25 (2005) 341-357.
         DOI: 10.1016/j.applthermaleng.2004.06.010
 
+Originally developed as part of the Ph.D. dissertation of Valerio Lo Brano
+at the Universita degli Studi di Palermo (DREAM).
+
 License: CC BY-NC 4.0 (non-commercial use).
 For commercial licensing contact: valerio.lobrano@unipa.it
 

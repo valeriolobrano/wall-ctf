@@ -14,6 +14,15 @@ multilayer wall assemblies using the Z-transform method. This is the same
 mathematical approach used by TRNSYS, DOE-2, BLAST, TARP, and the ASHRAE
 Transfer Function Method (TFM) for dynamic thermal simulation of buildings.
 
+The algorithm was originally developed as part of the **Ph.D. dissertation of
+Valerio Lo Brano** at the Universita degli Studi di Palermo (Department of
+Energy and Environmental Research - DREAM), and later refined and published
+in two peer-reviewed journal articles (see [How to cite](#how-to-cite)).
+The original implementation (software THELDA / CATI2005, written in VB.NET)
+was used to simulate the thermal behaviour of massive historical buildings
+in the Mediterranean area, where commercial tools like TRNSYS showed
+limitations due to the high thermal inertia of the walls.
+
 Given the thermophysical properties of a wall (layer thicknesses, densities,
 specific heats, conductivities), CATI determines the Z-domain transfer function
 coefficients that allow to compute, at each time step, the heat flux at the
