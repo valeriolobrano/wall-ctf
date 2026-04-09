@@ -21,136 +21,130 @@ bibliography: paper.bib
 
 # Summary
 
-`wall-ctf` is a Python library that computes the Conduction Transfer Function
-(CTF) coefficients for multilayer building wall assemblies using the
-Z-transform method. The CTF method, also known as the Transfer Function Method
-(TFM), is the mathematical backbone of widely used building energy simulation
-programs and is recommended by the ASHRAE Handbook of Fundamentals for cooling
-and heating load calculations [@Mitalas1967; @ASHRAE2021].
+`wall-ctf` is a Python library for computing the Conduction Transfer Function
+(CTF) coefficients of multilayer building walls. The CTF method (also called
+Transfer Function Method, TFM) underpins programs like TRNSYS, DOE-2, BLAST
+and TARP, and is the procedure recommended by the ASHRAE Handbook of
+Fundamentals for cooling and heating load calculations [@Mitalas1967;
+@ASHRAE2021].
 
-The thermal behaviour of a building wall is governed by the Fourier heat
-equation. The TFM addresses this by working in the Laplace domain, where the
-heat conduction equations become algebraic. The analytical solution, derived by
-Carslaw and Jaeger [@Carslaw1959], leads to a compact 2×2 transmission matrix
-for each wall layer. For a multilayer wall, the overall transmission matrix is
-the ordered product of all layer matrices. Through the Heaviside
-partial-fraction expansion and the Z-transform, the continuous-time transfer
-function is converted into a ratio of polynomials in $z^{-1}$ whose
-coefficients constitute the CTF set.
+Heat conduction through a wall is governed by the Fourier equation, a partial
+differential equation that is hard to solve directly in the time domain. The
+TFM sidesteps this difficulty by moving to the Laplace domain, where the
+problem becomes algebraic. Following Carslaw and Jaeger [@Carslaw1959], each
+homogeneous layer is described by a 2×2 transmission matrix; the overall wall
+matrix is just the product of the individual ones. A Heaviside partial-fraction
+expansion followed by the Z-transform turns the result into a ratio of
+polynomials in $z^{-1}$. The coefficients of those polynomials are the CTF set.
 
-Given the thermophysical properties of a wall (layer thicknesses, densities,
-specific heats, thermal conductivities), `wall-ctf` determines these
-coefficients. Once computed, they are a property of the wall itself and can be
-reused with any arbitrary input signal to compute the heat flux at the wall
-surfaces through a simple recursive formula, making the method extremely
-efficient for long simulations (e.g., a full year at hourly resolution with
-8760 time steps).
+The point is that these coefficients, once obtained, belong to the wall -- not
+to the input signal. Run a year-long simulation at hourly resolution (8760
+steps) and it takes a fraction of a second, because the expensive part was
+already done when the coefficients were computed.
 
 # Statement of need
 
-Despite being developed in the early 1970s [@Mitalas1967] and forming the
-basis of the most widely used building energy simulation tools, the Transfer
-Function Method has remained inaccessible as a standalone computational tool.
-Commercial software such as TRNSYS and DOE-2 implement the TFM internally, but
-their CTF computation modules are proprietary and cannot be used independently.
-EnergyPlus computes CTFs using the state-space method, but the logic is deeply
-embedded in the simulation engine. The ASHRAE Handbook provides pre-computed
-coefficient tables only for a limited set of North American wall typologies,
-inadequate for custom wall definitions or for the diverse construction
-typologies found in European and Mediterranean buildings.
+Mitalas and Stephenson published the TFM in the early 1970s [@Mitalas1967].
+More than fifty years later, it remains the backbone of the most widely
+distributed building energy simulation tools. Yet, to the best of the author's
+knowledge, there does not appear to be a standalone, open-source library that
+lets a researcher compute CTF coefficients from arbitrary wall thermophysical
+data and get the result as a reusable set of numbers.
 
-Beyond the lack of open-source tools, the original Mitalas-Stephenson
-algorithm presents well-documented numerical limitations when applied to
-massive building walls with high thermal inertia. As demonstrated in the Ph.D.
-dissertation of Lo Brano and subsequently published in two journal articles
-[@Beccali2005zone; @Beccali2005reliable], a naive application of the TFM to
-walls with thickness above 0.4 m can produce counterintuitive results:
-increasing the number of poles in the transfer function worsens the accuracy
-instead of improving it, with Percentage Mean Errors (PME) escalating from
-less than 1% to over 1000%. This behaviour is caused by numerical
-ill-conditioning that introduces non-minimum phase zeros and corrupts the
-low-frequency response of the discrete transfer function. The research
-identified three fundamental guidelines: (1) the best model is not always the
-largest in terms of number of poles; (2) increasing the sampling period
-eliminates most numerical problems; (3) an automatic procedure for the optimal
-selection of significant poles and residues (Procedure I) dramatically improves
-simulation reliability.
+Commercial programs (TRNSYS, DOE-2) embed the TFM in proprietary code that
+cannot be inspected or called in isolation. EnergyPlus computes CTFs internally
+with a state-space method, but the logic sits deep inside the simulation engine
+and is not exposed as a separate module. The ASHRAE Handbook provides
+pre-computed tables for a limited catalogue of North American wall typologies --
+useful in the US, much less so for the sandstone-and-plaster walls of a
+Sicilian palazzo or, more generally, for any wall that is not in the table.
 
-`wall-ctf` is aimed at building physicists, energy engineers, and researchers
-in building simulation who need a transparent, validated, and extensible tool
-for computing CTF coefficients for arbitrary wall compositions.
+There is also a numerical problem, and it is not obvious. When the original
+algorithm is applied to massive walls -- say, 0.4 m of sandstone or more, the
+kind you find all over Southern Europe -- adding more poles to the transfer
+function makes the results worse, not better. The Percentage Mean Error can
+jump from below 1% to over 1000%. The author ran into this during his Ph.D.
+at the Università degli Studi di Palermo and spent considerable time tracking
+down the cause: numerical ill-conditioning that plants non-minimum phase zeros
+in the discrete transfer function [@Beccali2005zone; @Beccali2005reliable].
+The research led to a few practical rules:
+
+- The best model is not necessarily the one with the most poles. Five poles
+  can be enough where fifteen fail.
+- A larger sampling period (2--3 h instead of 1 h) removes most numerical
+  difficulties, at the cost of time resolution.
+- Sorting residues by magnitude and discarding the negligible ones (Procedure
+  I) restores accuracy even at 1 h sampling, without manual tuning.
+
+`wall-ctf` packages these insights into a tool aimed at building physicists,
+energy engineers, and anyone who needs CTF coefficients without writing the
+algorithm from scratch.
 
 # State of the field
 
-A survey of existing open-source software reveals that no pip-installable
-Python library exists for computing CTF coefficients from wall thermophysical
-properties. The only related open-source project is FastCTF [@Khalighi2021], a
-minimal C++ program that uses Padé approximants (a different mathematical
-approach from the Mitalas-Stephenson Z-transform method) and is not available
-as a library or package. General-purpose building simulation wrappers such as
-`eppy` or `honeybee-energy` interface with EnergyPlus but do not expose CTF
-computation as a standalone function. No equivalent tool exists in R, MATLAB,
-or Fortran.
+At the time of writing, there does not seem to be a pip-installable Python
+package dedicated to CTF coefficient computation. A search of PyPI, GitHub,
+CRAN and the MATLAB File Exchange turned up only one related project: FastCTF
+[@Khalighi2021], a small C++ program that computes conduction transfer
+functions via Padé approximants -- a different approach from the
+Mitalas-Stephenson Z-transform method used here. FastCTF is not packaged as a
+library, has no Python bindings, and has seen little activity since 2023.
+General-purpose wrappers like `eppy` or `honeybee-energy` talk to EnergyPlus
+but do not expose its internal CTF computation.
 
-`wall-ctf` differs from these existing approaches by providing: (a) a
-standalone, pip-installable library with no dependency on external simulation
-engines; (b) the complete Mitalas-Stephenson algorithm including the Heaviside
-expansion, the Mitalas instruction, and the ramp-interpolation method for
-numerator computation; (c) the Procedure I improvement for optimal pole/residue
-selection [@Beccali2005reliable]; (d) built-in Fourier validation for quality
-assessment of the computed coefficients; (e) parallel batch computation for
+Compared with FastCTF and with what is buried inside commercial simulators,
+`wall-ctf` offers a pip-installable library with no external dependencies
+beyond NumPy, the full Mitalas-Stephenson algorithm (Heaviside expansion,
+Mitalas instruction, ramp interpolation), Procedure I for automatic pole
+selection, a built-in Fourier quality check, and parallel computation of
 multiple walls.
 
 # Software design
 
-`wall-ctf` is designed around three principles: transparency, efficiency, and
-ease of use.
+The code follows the mathematical derivation in @Beccali2005zone from start to
+finish: build the transmission matrices, find the roots of $B(s)$, expand into
+partial fractions, convert to the Z-domain, extract numerator and denominator
+coefficients. Every function carries a reference to the relevant equation in
+the source papers, so a reader can check the maths against the implementation
+line by line.
 
-**Transparency.** The implementation follows the mathematical derivation
-presented in @Beccali2005zone step by step: transmission matrix construction,
-root finding, Heaviside expansion, Z-domain coefficient computation. Each
-function is documented with references to the specific equations in the source
-publications. This allows researchers to inspect, verify, and extend every
-stage of the algorithm.
+Performance-sensitive loops are written with NumPy. The Fourier validation, for
+instance, evaluates all harmonics at once through batched 2×2 complex matrix
+products instead of looping in Python. The denominator polynomial is built by
+iterative factor multiplication -- O($n_p^2$) -- rather than the
+exponential-time recursion of the original VB.NET code. When several walls need
+processing, `concurrent.futures` distributes the work across CPU cores.
 
-**Efficiency.** The computationally intensive parts are vectorised with NumPy.
-The Fourier validation uses batched complex matrix operations across all
-harmonics simultaneously. The denominator polynomial is computed by iterative
-multiplication (O($n_p^2$)) rather than the exponential-time recursive
-approach used in the original implementation. Multiple walls can be computed in
-parallel using Python's `concurrent.futures`.
+From the user's side, a wall is a list of layers (Python objects or a JSON
+file) and `compute_ctf()` returns the coefficients. Procedure I runs by
+default, so the user does not need to guess how many poles are appropriate. A
+command-line interface handles batch jobs.
 
-**Ease of use.** Walls are defined as simple Python objects or JSON files. A
-single function call (`compute_ctf`) returns all coefficients. The library
-automatically selects significant poles (Procedure I) and caps the number of
-effective coefficients based on the denominator's numerical significance. A
-command-line interface is provided for batch processing.
-
-A key design decision was the adoption of SI units throughout, which required
-solving a subtle numerical issue: the original algorithm (developed in
-Imperial units) used a fixed root-finding step size that, when applied to SI
-units, was too coarse to resolve closely-spaced roots for multilayer walls.
-`wall-ctf` addresses this with an adaptive step size computed from the
-thermophysical properties of the individual layers.
+One design choice deserves mention. The original algorithm was written in
+Imperial units, where the root-finding step size of 0.01 worked fine. In SI
+the roots are much closer together, and that same step misses every other one.
+`wall-ctf` computes an adaptive step from the layer diffusivities and
+thicknesses. This is not documented in the original publications because it
+was not an issue in Imperial; it only surfaced during the Python rewrite.
 
 # Research impact statement
 
-The mathematical method implemented in `wall-ctf` has been used in published
-research since 2005. The two foundational papers [@Beccali2005zone;
-@Beccali2005reliable] have been cited in the building simulation literature and
-contributed to the understanding of the numerical limitations of the TFM for
-massive European building walls. The original software (THELDA/CATI2005,
-written in VB.NET) was used to simulate the thermal behaviour of historical
-buildings in the Mediterranean area and to build a database of Z-transform
-coefficients for Mediterranean building typologies. The release of `wall-ctf`
-as an open-source Python library makes this method accessible to the broader
-research community for the first time, enabling reproducible research and
-integration with modern Python-based building simulation workflows.
+The method behind `wall-ctf` has been in use since 2005. The two journal papers
+[@Beccali2005zone; @Beccali2005reliable] have been cited in the building
+simulation literature and contributed to the discussion on how the TFM performs
+with massive European walls -- a question that matters for energy retrofitting
+of historical buildings, a growing concern across Southern Europe.
+
+The original software, THELDA (later CATI2005), was written in VB.NET and was
+used to produce a database of Z-transform coefficients for Mediterranean
+building typologies. That code was never released publicly. `wall-ctf` is a
+complete rewrite in Python that makes the same algorithm available as an open
+library, so that other groups can reproduce and build on the results.
 
 # AI usage disclosure
 
-No artificial intelligence tools were used in the development of the
-mathematical algorithm, which was entirely derived and validated in the Ph.D.
-dissertation of the author and in the referenced publications.
+The mathematical algorithm was developed and validated entirely in the author's
+Ph.D. dissertation and in the referenced journal publications, without
+assistance from AI tools.
 
 # References
