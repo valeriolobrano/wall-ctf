@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/wall-ctf)](https://pypi.org/project/wall-ctf/)
 [![PyPI downloads](https://img.shields.io/pypi/dm/wall-ctf)](https://pypi.org/project/wall-ctf/)
-[![PyPI total downloads](https://static.pepy.tech/badge/wall-ctf)](https://pepy.tech/project/wall-ctf)
+[![PyPI total downloads](https://img.shields.io/pypi/dt/wall-ctf)](https://pypi.org/project/wall-ctf/)
 [![Python](https://img.shields.io/pypi/pyversions/wall-ctf)](https://pypi.org/project/wall-ctf/)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![GitHub stars](https://img.shields.io/github/stars/valeriolobrano/wall-ctf)](https://github.com/valeriolobrano/wall-ctf)
