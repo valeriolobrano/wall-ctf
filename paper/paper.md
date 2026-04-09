@@ -151,7 +151,7 @@ The CTF output has been validated against the independent Fourier
 solution for a heavy concrete wall. The two curves are virtually
 indistinguishable (PME = 0.15%), confirming that the selected set of poles
 and residues accurately represents the wall's thermal dynamics.
-\label{fig:validation}](../docs/ctf_vs_fourier.png)
+\label{fig:validation}](docs/ctf_vs_fourier.png)
 
 Additional tests with lightweight walls (wood, 10 cm), two-layer walls
 (brick + concrete), and various sampling periods confirm PME values
